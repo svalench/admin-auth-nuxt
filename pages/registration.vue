@@ -26,7 +26,6 @@
 <script>
 export default {
   name: "registration",
-   layout:'login',
   data(){
     return{
       form:{

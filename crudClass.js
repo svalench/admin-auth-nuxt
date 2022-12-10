@@ -1,8 +1,8 @@
-import axios from 'axios'
-import {mutations} from 'vuex'
+
 class CrudBase{
-  constructor (name='', prefix='') {
+  constructor (name='', prefix='', host='') {
         this.modelName = name
+       this.host = host || process.env.apiServer || process.env._AXIOS_BASE_URL_
         this.prefix = prefix
         this.mutations = {
           'setGetObject': this.setGetObject,
@@ -12,14 +12,14 @@ class CrudBase{
           this.getList,
           this.getObject
         ]
-        this.actions = [
-          this.list,
-          this.get,
-          this.post,
-          this.put,
-          this.patch,
-          this.delete,
-        ]
+        this.actions = {
+          'list': this.list,
+          'get': this.get,
+          'post': this.post,
+          'put': this.put,
+          'patch': this.patch,
+          'delete': this.delete,
+        }
         this.variables = {}
         this.variables[`${name}List`] = []
         this.variables[`${name}CurrentObject`] = {}
@@ -27,26 +27,26 @@ class CrudBase{
     list = async ({commit}, {limit=10, offset=0, link='', params={}}={}) => {
       if(limit) params['limit'] = limit
       if(offset) params['offset'] = offset
-      let list =  await axios.get(`/${this.prefix}/${link}`, {params:params})
+      let list =  await $nuxt.$axios.$get(`${this.host}/${this.prefix}${link}`, {params:params})
       commit('setList', list)
       return list
     }
     get = async ({commit}, {id=null, link='', params={}}={}) => {
-      let obj = await axios.get(`/${this.prefix}/${link}`, {params:params})
+      let obj = await $nuxt.$axios.$get(`${this.host}/${this.prefix}${link}/${id}`, {params:params  })
       commit('setGetObject', obj)
       return obj
     }
     post = async (data={}, link='', params={}) => {
-      return await axios.post(`/${this.prefix}/${link}`, data, {params: params})
+      return await $nuxt.$axios.$post(`${this.host}/${this.prefix}${link}`, data, {params: params})
     }
-    put = async (data={}, link='', params={}) => {
-      return await axios.put(`/${this.prefix}/${link}`, data, {params: params})
+    put = async ( data={}, link='', params={}) => {
+      return await $nuxt.$axios.$put(`${this.host}/${this.prefix}${link}`, data, {params: params})
     }
     patch = async (data={}, link='', params={}) => {
-     return await axios.patch(`/${this.prefix}/${link}`, data, {params: params})
+     return await $nuxt.$axios.$patch(`${this.host}/${this.prefix}${link}`, data, {params: params})
     }
     delete = async (id=null, link='', params={}) => {
-     return await axios.delete(`/${this.prefix}/${link}`, {params: params})
+     return await $nuxt.$axios.$delete(`${this.host}/${this.prefix}${link}/${id}`, {params: params})
     }
     setList = (state, nv) => {state[`${this.modelName}List`] = nv}
     setGetObject = (state, nv) => {state[`${this.modelName}CurrentObject`] = nv}

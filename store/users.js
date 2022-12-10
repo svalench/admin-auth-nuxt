@@ -1,18 +1,19 @@
 import {CrudBase} from "~/crudClass";
-const crudUser = new CrudBase(
-  'users'
+let crudUser = {}
+
+ crudUser = new CrudBase(
+  'users',
+  'users',
 )
+
+
 export const state = () => ({
   ...crudUser.variables,
-  ddd: [],
 });
 
-export const mutations  = () => ({
+export const mutations  = {
   ...crudUser.mutations,
-  setDdd(state, nv){
-    state.ddd = nv
-  }
-});
+};
 
 export const actions = {
   ...crudUser.actions
